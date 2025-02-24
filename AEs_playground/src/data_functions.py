@@ -61,7 +61,7 @@ def inverse_normalization_field(F,ma,mi, spatial_dimensions): #here one less dim
             F_new[...,count,:,:] = F_new[...,count,:,:]*(ma[count]-mi[count]) + mi[count]
         return F_new
     
-def save_checkpoint(enco, f , dec, optimizer, scheduler, epoch, loss, loss_coeff_2, lambda_strength, start_backprop,full_training_count,filepath):
+def save_checkpoint(enco, dec, optimizer, scheduler, epoch, loss, lambda_strength,full_training_count,filepath):
     """saves the checkpoint of the system
 
     Args:
@@ -79,15 +79,12 @@ def save_checkpoint(enco, f , dec, optimizer, scheduler, epoch, loss, loss_coeff
     """    
     checkpoint = {
             'enco':enco.state_dict(),
-            'f':f.state_dict(),
             'dec':dec.state_dict(),
             'optim':optimizer.state_dict(),
             'scheduler':scheduler.state_dict(),
             'epoch' : epoch,
             'loss' : loss,
-            'loss_coeff_2': loss_coeff_2,
             'lambda_strength': lambda_strength,
-            'start_backprop': start_backprop,
             'full_training_count' : full_training_count
         }
     tc.save(checkpoint, filepath)
@@ -122,7 +119,7 @@ def load_checkpoint(enco, f , dec, optim, scheduler, filepath, device):
         
     return enco, f , dec, optim, scheduler , epoch, loss, loss_coeff_2, start_backprop, full_training_count
 
-def get_max_and_min(dataset, param_size, dim_input, normalization_field_ma, normalization_field_mi, normalization_parameters_ma, normalization_parameters_mi):
+def get_max_and_min(dataset, dim_input, normalization_field_ma, normalization_field_mi):
     """gets the maxima and the minima for the input fields and for the vector of parameters. In initial_information.yaml, under normalization_field_ma, normalization_field_mi, normalization_parameters_ma
     and normalization_parameters_mi one can decide to turn on or off the normalization (off simply by putting 1.0 as max and 0.0 as min)
 
@@ -145,14 +142,8 @@ def get_max_and_min(dataset, param_size, dim_input, normalization_field_ma, norm
     ma_field = tc.ones( num_channels_input) * (-1e10)
     mi_field = tc.ones( num_channels_input) * (1e10)
 
-    if param_size > 0:
-        ma_param = -1e10 * tc.ones(param_size)
-        mi_param = 1e10 * tc.ones(param_size)
-    else:
-        ma_param = tc.tensor([1.0])
-        mi_param = tc.tensor([0.0])
 
-    for field, dt, param in dataset:
+    for field in dataset:
         for j in range(num_channels_input):
             if spatial_dim == 1:
                 check_ma_field = tc.max(field[:,:,j,:])
@@ -168,27 +159,12 @@ def get_max_and_min(dataset, param_size, dim_input, normalization_field_ma, norm
             if check_mi_field < mi_field[j]:
                 mi_field[j] = check_mi_field
 
-        if param_size > 0:
-            for i in range(param_size):
-                check_ma_param = tc.max(param.reshape(-1, param_size)[:,i])
-                check_mi_param = tc.min(param.reshape(-1, param_size)[:,i])	
-                if check_ma_param > ma_param[i]:
-                    ma_param[i] = check_ma_param
-
-                if check_mi_param < mi_param[i]:
-                    mi_param[i] = check_mi_param
-
     if not normalization_field_ma[0]:
         for j in range(num_channels_input):
             ma_field[j] = normalization_field_ma[j+1]
             mi_field[j] = normalization_field_mi[j+1]
 
-    if not normalization_parameters_ma[0]:
-        for j in range(param_size):
-            ma_param[i] = normalization_parameters_ma[j+1]
-            mi_param[i] = normalization_parameters_mi[j+1]
-
-    return [ma_field.clone().detach(), mi_field.clone().detach(), ma_param.clone().detach(), mi_param.clone().detach()]
+    return [ma_field.clone().detach(), mi_field.clone().detach()]
 
 class CustomStarDataset(Dataset):
     """builds the dataset by loading the whole dataset on the gpu. Usefull only if small dataset
@@ -240,7 +216,7 @@ class CustomStarDataset_Big_Dataset(Dataset):
 
     """    
     # This loads the data and converts it, make data rdy
-    def __init__(self,file_path_field,file_path_parameter, dim_param, time_dependence_in_f):
+    def __init__(self,file_path_field):
         """initialization path data, dimension of parameters vector and boolean on time dependence in f
 
         Args:
@@ -250,10 +226,7 @@ class CustomStarDataset_Big_Dataset(Dataset):
             time_dependence_in_f (bool): if true, f also depends on time
         """        
         self.fields = tc.tensor(np.load(file_path_field,mmap_mode='r'))
-        self.params = tc.tensor(np.load(file_path_parameter,mmap_mode='r'))
-        self.dim_param = dim_param
         self.size = self.fields.size()
-        self.time_dependence_in_f = time_dependence_in_f
     
     # This returns the total amount of samples in your Dataset
     def __len__(self):
@@ -274,15 +247,4 @@ class CustomStarDataset_Big_Dataset(Dataset):
         Returns:
             torch.tensor(), torch.tensor(): returns fields and params of batch at index idx
         """        
-        if self.dim_param > 0:
-            if self.time_dependence_in_f:
-                params = self.params[idx][0:self.dim_param-1]*tc.ones(self.size[1]).unsqueeze(-1) #-1 if time is considered as parameter
-            else:
-                params = self.params[idx][0:self.dim_param]*tc.ones(self.size[1]).unsqueeze(-1)
-            if self.time_dependence_in_f:
-                time = tc.arange(0,2.05,0.05).unsqueeze(-1)
-                params = tc.cat((params,time), dim=-1) 
-        else:
-            params = tc.zeros(self.size[1]).unsqueeze(-1)
-        dt = tc.ones(self.size[1]-1)*self.params[idx][-1]
-        return self.fields[idx] ,dt , params
+        return self.fields[idx]
