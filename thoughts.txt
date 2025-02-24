@@ -1,0 +1,2 @@
+- Can two variables be independent but correlated?
+- Is it really necessary to use a VAE instead of an AE with an L1 normalization on the latent vectors?
