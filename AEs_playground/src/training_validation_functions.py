@@ -150,7 +150,7 @@ def nn_training(conv_encoder , conv_decoder, training_data, validation_data, ma_
                 if lambda_strength >= lambda_regularization:
                     lambda_strength = lambda_regularization
                     
-                train_l1_data, train_regularization_data, train_loss_data = train_epoch(conv_encoder, conv_decoder, ma_mi, device, optim, training_data, [loss_coeff[0],0], dim_input, clipping, Auto_Encoder)
+                train_l1_data, train_regularization_data, train_loss_data = train_epoch(conv_encoder, conv_decoder, ma_mi, device, optim, training_data, [loss_coeff[0],lambda_strength], dim_input, clipping, Auto_Encoder)
                 valid_l1_data, valid_l1_unnorm_data, valid_regularization_loss, valid_loss_data = valid_epoch(conv_encoder, conv_decoder, ma_mi, device, validation_data,[1,1], dim_input, Auto_Encoder)
 
             time2 = time.time()

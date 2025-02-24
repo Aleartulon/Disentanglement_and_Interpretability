@@ -42,7 +42,8 @@ def reconstruction_loss_VAE(inp,target, log_variances, dim_input):
         inp = inp.flatten(start_dim=-dim_input)
         target = target.flatten(start_dim=-dim_input)
         log_variances = log_variances.flatten(start_dim=-dim_input)
-    loss = tc.mean(tc.sum((inp - target)**2/(2*tc.exp(log_variances))+0.5 * log_variances,dim=-1))
+    
+    loss = tc.mean(tc.sum((inp - target)**2,dim=-1).squeeze(-1)/(2*tc.exp(log_variances))+ inp.size(-1) * 0.5 * log_variances)
     return loss
 
 def l1_latent_regularization(x, lambda_l1):
