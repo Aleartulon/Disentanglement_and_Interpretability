@@ -87,8 +87,8 @@ def main():
 
     # prepare dataloaders for training and validation
     data_path = initial_information['data_path'] 
-    dataset_training = CustomStarDataset_Big_Dataset(data_path + 'field_step_training.npy')
-    dataset_validation = CustomStarDataset_Big_Dataset(data_path + 'field_step_validation.npy')
+    dataset_training = CustomStarDataset_Big_Dataset(data_path + 'image_training.npy')
+    dataset_validation = CustomStarDataset_Big_Dataset(data_path + 'image_validation.npy')
 
     training = DataLoader(dataset_training,batch_size=initial_information['batch_size'], num_workers=initial_information['num_workers'], shuffle=True,drop_last=True,pin_memory=True)
     validation = DataLoader(dataset_validation,batch_size=initial_information['batch_size'], num_workers=initial_information['num_workers'], shuffle=True,drop_last=True,pin_memory=True)

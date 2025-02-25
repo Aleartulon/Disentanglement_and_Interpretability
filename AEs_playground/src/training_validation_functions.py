@@ -141,7 +141,7 @@ def nn_training(conv_encoder , conv_decoder, training_data, validation_data, ma_
             time1 = time.time()
             if i < time_of_AE: #use only AR
                 train_l1_data, train_regularization_data, train_loss_data = train_epoch(conv_encoder, conv_decoder, ma_mi, device, optim, training_data, [loss_coeff[0],0], dim_input, clipping, Auto_Encoder)
-                valid_l1_data, valid_l1_unnorm_data, valid_regularization_loss, valid_loss_data = valid_epoch(conv_encoder, conv_decoder, ma_mi, device, validation_data,[1,1], dim_input, Auto_Encoder)
+                valid_l1_data, valid_l1_unnorm_data, valid_regularization_loss, valid_loss_data = valid_epoch(conv_encoder, conv_decoder, ma_mi, device, validation_data,[loss_coeff[0],1], dim_input, Auto_Encoder)
                 valid_loss_data = 100.0
             else:
                 lambda_strength = lambda_regularization * lambda_regularization_strength * full_training_count #increase dynamically the strength of the latent regularization term
@@ -151,7 +151,7 @@ def nn_training(conv_encoder , conv_decoder, training_data, validation_data, ma_
                     lambda_strength = lambda_regularization
                     
                 train_l1_data, train_regularization_data, train_loss_data = train_epoch(conv_encoder, conv_decoder, ma_mi, device, optim, training_data, [loss_coeff[0],lambda_strength], dim_input, clipping, Auto_Encoder)
-                valid_l1_data, valid_l1_unnorm_data, valid_regularization_loss, valid_loss_data = valid_epoch(conv_encoder, conv_decoder, ma_mi, device, validation_data,[1,1], dim_input, Auto_Encoder)
+                valid_l1_data, valid_l1_unnorm_data, valid_regularization_loss, valid_loss_data = valid_epoch(conv_encoder, conv_decoder, ma_mi, device, validation_data,[loss_coeff[0],lambda_strength], dim_input, Auto_Encoder)
 
             time2 = time.time()
 
@@ -179,6 +179,7 @@ def nn_training(conv_encoder , conv_decoder, training_data, validation_data, ma_
 
 
             print("Epoch: " +str(i)+', ' + str(time2-time1)+ ' s, '+'AutoEncoder is '+ Auto_Encoder)
+            print("Latent regularization strength: " +str(lambda_strength))
             print('Train_loss_data = ' + str(train_loss_data) + ', l1 train loss = ' +str(train_l1_data) + ', train latent regularization = ' + str(train_regularization_data))
             print('Valid_loss_data = ' + str(valid_loss_data)+ ', l1 valid loss = ' +str(valid_l1_data) +  ', l1 valid unnorm loss = ' +str(valid_l1_unnorm_data) +  ', valid latent regularization = ' + str(valid_regularization_loss))
             print('The validation loss has not decreased for ' + str(early_stopping) + ' epochs!')

@@ -1,9 +1,9 @@
 physics_model: 'datasets/Molenkamp' # this is the Path to a directory for the training on a given dataset
 description: 'VAE/try_KL_1.0/' #for a given dataset, one can train with different hyperparameters, hence the 'description'
-epochs: 5000 #maximum number of epochs
-learning_rate: 0.001 #initial learning rate
+epochs: 10000 #maximum number of epochs
+learning_rate: 0.0014 #initial learning rate
 loss_coefficients: [1, 1.0] #first one is reconstruction error, second one is the regularization term. For AE it is jusdt L1 norm, for VAE it is KL divergence
-lambda_regularization_strength: 0.0014 #initial coeffient of the regularization term, then increased dinamically during training
+lambda_regularization_strength: 0.01 #initial coeffient of the regularization term, then increased dinamically during training
 dim_input: [1, 2]  # first dimension is # of channels (one if the predicted solution is a scalar field), second is spatial dimensions per channel.
 gamma_lr: 0.999 # gamma of  tc.optim.lr_scheduler.ExponentialLR()
 checkpoint: false  # if true uses existing checkpoint
