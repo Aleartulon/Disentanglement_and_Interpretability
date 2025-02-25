@@ -9,10 +9,10 @@ gamma_lr: 0.99 # gamma of  tc.optim.lr_scheduler.ExponentialLR()
 checkpoint: false  # if true uses existing checkpoint
 batch_size : 64 # batch size
 time_of_AE: 10 # number of initial epochs where only the AutoEncoder is trained, i.e., loss_coeff_TF_AR_together = [1, 0, 0, 0]. In parallel of this a linear warm-up of the learning rate is performed
-clipping: [0, 2.5] #[if 1 clipping is applied to Encoder and Decoder, maximum norm allowed to gradients]
+clipping: [1, 5.0] #[if 1 clipping is applied to Encoder and Decoder, maximum norm allowed to gradients]
 side_size : 128 # length of each dimension of the input field
 AutoEncoder : "VAE" # defines the type of AutoEncoder used: if 'VAE' a Variational Autoencoder will be used, otherwise a standard AutoEncoder.
-which_device : 'cuda:0' #device where to train
+which_device : 'cuda:1' #device where to train
 num_workers : 8 #number of workers of dataloaders
 data_path : '../../../../../scratch/aalelonghi/molenkamp_whole_time_series/' #path of training and validation data
 normalization_field_ma : [True, 1.0] # if true, maxima of each dimension of the solution fields are found. If not, dimension 1,2, etc are the maxima of dimension 1,2, etc of the solution field (only one if it is a scalar field)

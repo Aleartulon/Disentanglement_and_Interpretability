@@ -157,7 +157,7 @@ def L2_relative(inp, target, dim_inp, latent):
         return L2_relative
 
 def sample_from_gaussian(means, log_variances):
-        random = tc.rand_like(means)
+        random = tc.randn_like(means)
         sampled_vector = means + random * tc.exp( 0.5 * log_variances)
         return sampled_vector
 

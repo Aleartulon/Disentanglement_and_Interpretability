@@ -206,7 +206,7 @@ class Convolutional_Encoder_VAE(nn.Module):
         nn.init.kaiming_uniform_(self.log_variances.weight)
     
     def reparametrization(self, means, log_variances):
-        random = tc.rand_like(means)
+        random = tc.randn_like(means)
         sampled_vector = means + random * tc.exp(0.5 * log_variances)
         return sampled_vector
 
