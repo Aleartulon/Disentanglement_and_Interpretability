@@ -88,6 +88,10 @@ def l_regularization_latent_space(lambda_regularization, Auto_Encoder, latent_sp
     
     elif Auto_Encoder == 'VAE':
         regularization_latent = tc.mean(KL_divergence(means, log_variances)) * lambda_regularization
+        if tc.isnan(regularization_latent):
+            print('l_regularization_latent_space')
+            print(log_variances)
+            exit()
     return regularization_latent
 
 def KL_divergence(means,log_variances):
@@ -106,15 +110,22 @@ def l1_latent_regularization(x, lambda_l1):
 
     return lambda_l1 * l1_norm
 
-def reconstruction_loss_VAE(inp,target, log_variances, dim_input):
+def reconstruction_loss_VAE(inp, target, log_variances, dim_input):
     eps = tc.tensor(1e-8)
     if dim_input > 1:
         inp = inp.flatten(start_dim=-dim_input)
         target = target.flatten(start_dim=-dim_input)
         log_variances = log_variances.flatten(start_dim=-dim_input)
     
-    loss = tc.mean(tc.sum((inp - target)**2,dim=-1).squeeze(-1)/(2*tc.exp(log_variances)) + inp.size(-1) * 0.5 * log_variances)
+    log_variances = tc.clamp(log_variances, min=-10, max=10)
+    variances = tc.exp(log_variances) + eps 
+    loss = tc.mean(tc.sum((inp - target)**2, dim=-1) / (2 * variances) + inp.size(-1) * 0.5 * log_variances)
+    if tc.isnan(loss):
+        print('reconstruction_loss_VAE encountered NaN')
+        print(log_variances)
+        exit()
     return loss
+
 
 
 def L2_relative(inp, target, dim_inp, latent):
