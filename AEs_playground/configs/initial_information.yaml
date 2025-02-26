@@ -3,9 +3,9 @@ description: 'VAE/try_regularization_1.0/' #for a given dataset, one can train w
 epochs: 10000 #maximum number of epochs
 learning_rate: 0.001 #initial learning rate
 loss_coefficients: [1, 1.0] #first one is reconstruction error, second one is the regularization term. For AE it is jusdt L1 norm, for VAE it is KL divergence
-lambda_regularization_strength: 0.01 #initial coeffient of the regularization term, then increased dinamically during training
+lambda_regularization_strength: 1.0 #initial coeffient of the regularization term, then increased dinamically during training
 dim_input: [1, 2]  # first dimension is # of channels (one if the predicted solution is a scalar field), second is spatial dimensions per channel.
-gamma_lr: 0.99 # gamma of  tc.optim.lr_scheduler.ExponentialLR()
+gamma_lr: 0.995 # gamma of  tc.optim.lr_scheduler.ExponentialLR()
 checkpoint: false  # if true uses existing checkpoint
 batch_size : 64 # batch size
 time_of_AE: 1 # number of initial epochs where only the AutoEncoder is trained, i.e., loss_coeff_TF_AR_together = [1, 0, 0, 0]. In parallel of this a linear warm-up of the learning rate is performed

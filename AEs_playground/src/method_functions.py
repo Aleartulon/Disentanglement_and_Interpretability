@@ -117,9 +117,10 @@ def reconstruction_loss_VAE(inp, target, log_variances, dim_input):
         target = target.flatten(start_dim=-dim_input)
         #log_variances = log_variances.flatten(start_dim=-dim_input)
     
-    log_variances = tc.clamp(log_variances, min=-6, max=6)
-    variances = tc.exp(log_variances) + eps 
-    loss = tc.mean(tc.sum((inp - target)**2, dim=-1) / (2 * variances) + inp.size(-1) * 0.5 * log_variances)
+    #log_variances = tc.clamp(log_variances, min=-6, max=6)
+    #variances = tc.exp(log_variances) + eps 
+    #loss = tc.mean(tc.sum((inp - target)**2, dim=-1) / (2 * variances) + inp.size(-1) * 0.5 * log_variances)
+    loss = tc.mean(tc.sum((inp - target)**2, dim=-1) / 2)
     #if tc.isnan(loss):
     #    print('reconstruction_loss_VAE encountered NaN')
     #    print(log_variances)

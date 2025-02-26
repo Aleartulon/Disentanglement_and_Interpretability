@@ -261,10 +261,9 @@ class Convolutional_Decoder_VAE(nn.Module):
         self.activation = self.gelu
         self.initial_activation = initial_activation
 
-        #self.log_variances_dfnn = nn.Linear(input_dfnn, dim_input[0]) #get the logsigma for the whole field (sigmas if multiple fields)
+        self.log_variances_dfnn = nn.Linear(input_dfnn, dim_input[0]) #get the logsigma for the whole field (sigmas if multiple fields)
         self.dfnn = nn.Linear(input_dfnn, output_dfnn)
         nn.init.kaiming_uniform_(self.dfnn.weight)
-        self.log_variances = tc.nn.Parameter(tc.tensor(0.0)) 
 
         if self.dim_input == 1:
             for i in range(len(kernel)):
@@ -287,7 +286,7 @@ class Convolutional_Decoder_VAE(nn.Module):
             torch.tensor: a tensor of size [B * T, C, dim_x_1, dim_x_2, ...], where B is batch_size, T is the length of the full time series, C is the number of channels of the 
             predicted solution field, dim_x_1, dim_x_2, ... are the dimensions of the first spatial dimension, second spatial dimension, etc
         """        
-        #log_variances = self.log_variances_dfnn(x)
+        log_variances = self.log_variances_dfnn(x)
         x = self.dfnn(x)
         if self.initial_activation:
             x = self.activation(x) #do not use this if relu in encoder and decoder !!!!!!!!
@@ -302,6 +301,6 @@ class Convolutional_Decoder_VAE(nn.Module):
             x = self.transposed_convolutionals[i](x)
             x = self.activation(x)
         x = self.transposed_convolutionals[-1](x)
-        return x[:,0,...].unsqueeze(1), self.log_variances # means, log_variances
+        return x[:,0,...].unsqueeze(1), log_variances # means, log_variances
 
 
