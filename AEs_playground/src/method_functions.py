@@ -88,10 +88,6 @@ def l_regularization_latent_space(lambda_regularization, Auto_Encoder, latent_sp
     
     elif Auto_Encoder == 'VAE':
         regularization_latent = tc.mean(KL_divergence(means, log_variances)) * lambda_regularization
-        #if tc.isnan(regularization_latent):
-        #    print('l_regularization_latent_space')
-        #    print(log_variances)
-        #    exit()
     return regularization_latent
 
 def KL_divergence(means,log_variances):
@@ -110,7 +106,7 @@ def l1_latent_regularization(x, lambda_l1):
 
     return lambda_l1 * l1_norm
 
-def reconstruction_loss_VAE(inp, target, log_variances, dim_input):
+def reconstruction_loss_VAE(inp, target, log_variances, dim_input): #how to treat sigmas of decoder is tricky and can bring instabilities to the training
     eps = tc.tensor(1e-8)
     if dim_input > 1:
         inp = inp.flatten(start_dim=-dim_input)
