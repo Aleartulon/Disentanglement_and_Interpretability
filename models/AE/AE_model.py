@@ -188,7 +188,7 @@ class AutoEncoder:
         optim = tc.optim.Adam(params_to_optimize, lr = learning_rate)
         lambda1 = lambda i : i / warmup_time
         pre_scheduler = tc.optim.lr_scheduler.LambdaLR(optim,lambda1) #warm up of the learning rate
-        scheduler = tc.optim.lr_scheduler.ExponentialLR(optim, learning_rate)
+        scheduler = tc.optim.lr_scheduler.ExponentialLR(optim, gamma_scheduler)
 
         return optim, pre_scheduler, scheduler
 
