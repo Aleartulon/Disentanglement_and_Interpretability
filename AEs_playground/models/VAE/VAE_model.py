@@ -191,7 +191,7 @@ class Variational_AutoEncoder:
         self.encoder = Convolutional_Variational_Encoder(self.dim_input, self.kernel_encoder, self.filters_encoder, self.stride_encoder, final_reduction**2, self.latent_dimension, self.activation)
         self.decoder = Convolutional_Variational_Decoder(self.dim_input, self.kernel_decoder, self.filters_decoder, self.stride_decoder, self.latent_dimension, input_dfnn_encoder, final_reduction, self.activation, self.number_channels_input_cnns_deco)
 
-    def send_to_device_and_set_optimizer(self, learning_rate, warmup_time, device):
+    def send_to_device_and_set_optimizer(self, learning_rate, gamma_scheduler , warmup_time, device):
         self.encoder = self.encoder.to(self.device)
         self.decoder = self.decoder.to(self.device)
 
@@ -205,7 +205,7 @@ class Variational_AutoEncoder:
         optim = tc.optim.Adam(params_to_optimize, lr = learning_rate)
         lambda1 = lambda i : i / warmup_time
         pre_scheduler = tc.optim.lr_scheduler.LambdaLR(optim,lambda1) #warm up of the learning rate
-        scheduler = tc.optim.lr_scheduler.ExponentialLR(optim, learning_rate)
+        scheduler = tc.optim.lr_scheduler.ExponentialLR(optim, gamma_scheduler)
 
         return optim, pre_scheduler, scheduler
 
