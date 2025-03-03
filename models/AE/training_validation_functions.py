@@ -123,11 +123,11 @@ def l1_loss(conv_encoder, conv_decoder, input_encoder, dim_input, loss_coeff, ma
 
     latent_space = conv_encoder(input_encoder)
     back_to_physical = conv_decoder(latent_space)
-    l1 = L2_relative(back_to_physical,input_encoder, dim_input[1], False) * loss_coeff['l_reconstruction']
+    l1 = L2_relative_loss(back_to_physical,input_encoder, dim_input[1], False) * loss_coeff['l_reconstruction']
 
     if not train:
         back_to_physical = inverse_normalization_field(back_to_physical, ma_mi[0], ma_mi[1], dim_input[1])
-        l1_unnorm = L2_relative(back_to_physical, inverse_normalization_field(input_encoder, ma_mi[0], ma_mi[1], dim_input[1]) , dim_input[1], False) * loss_coeff['l_reconstruction_unnormed']
+        l1_unnorm = L2_relative_loss(back_to_physical, inverse_normalization_field(input_encoder, ma_mi[0], ma_mi[1], dim_input[1]) , dim_input[1], False) * loss_coeff['l_reconstruction_unnormed']
         l1 = [l1, l1_unnorm]
 
     return l1, latent_space
@@ -153,7 +153,7 @@ def l1_latent_regularization(x, lambda_l1):
 
     return lambda_l1 * l1_norm
 
-def L2_relative(inp, target, dim_inp, latent):
+def L2_relative_loss(inp, target, dim_inp, latent):
     """computes the relative (normalized) L2 norm between predicted tensor and expected tensor. It is used both for the predicted fields and for the predicted latent vectors. it is used 
     to compute L_1, L_2^T, L_2^A and L_3. 
 

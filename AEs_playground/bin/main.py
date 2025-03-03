@@ -47,7 +47,7 @@ def main():
     model = ClassRef(global_information, model_information)
 
     #move the models to the device and set optimizer
-    optim, pre_scheduler, scheduler = model.send_to_device_and_set_optimizer(global_information['learning_rate'], global_information['warmup_lr'], device)
+    optim, pre_scheduler, scheduler = model.send_to_device_and_set_optimizer(global_information['learning_rate'], global_information['gamma_lr'] , global_information['warmup_lr'], device)
     #print information
 
     print('---------- INITIAL INFORMATION ----------')
@@ -62,8 +62,8 @@ def main():
 
     # prepare dataloaders for training and validation
     data_path = global_information['data_path'] 
-    dataset_training = CustomStarDataset_Big_Dataset(data_path + 'image_training.npy')
-    dataset_validation = CustomStarDataset_Big_Dataset(data_path + 'image_validation.npy')
+    dataset_training = CustomStarDataset_Big_Dataset(data_path + global_information['training_data_path'])
+    dataset_validation = CustomStarDataset_Big_Dataset(data_path + global_information['validation_data_path'])
 
     training = DataLoader(dataset_training,batch_size=global_information['batch_size'], num_workers=global_information['num_workers'], shuffle=True,drop_last=True,pin_memory=True)
     validation = DataLoader(dataset_validation,batch_size=global_information['batch_size'], num_workers=global_information['num_workers'], shuffle=True,drop_last=True,pin_memory=True)
