@@ -1,7 +1,6 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from src.data_functions import *
 #set type of tensors
 tc.set_default_dtype(tc.float32)
@@ -23,14 +22,15 @@ def main():
     os.makedirs(global_information['PATH']+'/scripts/bin',exist_ok=True)
     os.makedirs(global_information['PATH']+'/scripts/src',exist_ok=True)
     os.makedirs(global_information['PATH']+'/scripts/configs',exist_ok=True)
+    os.makedirs(global_information['PATH']+'/scripts/models/'+str(global_information['model']),exist_ok=True)
     
     if os.path.exists(global_information['PATH'] +'/runs'):
         shutil.rmtree(global_information['PATH']+'/runs') 
 
     #copy scripts
     shutil.copy('bin/main.py', global_information['PATH']+'/scripts/bin/')
-    shutil.copy('../models/'+str(global_information['model'])+'/'+str(global_information['model'])+'_model.py', global_information['PATH']+'/scripts/src')
-    shutil.copy('../models/'+str(global_information['model'])+'/training_validation_functions.py', global_information['PATH']+'/scripts/src')
+    shutil.copy('models/'+str(global_information['model'])+'/'+str(global_information['model'])+'_model.py', global_information['PATH']+'/scripts/models/'+str(global_information['model']))
+    shutil.copy('models/'+str(global_information['model'])+'/training_validation_functions.py', global_information['PATH']+'/scripts/models/'+str(global_information['model']))
     shutil.copy('src/data_functions.py', global_information['PATH']+'/scripts/src')
     shutil.copy('configs/global_information.yaml', global_information['PATH']+'/scripts/configs')
     shutil.copy('configs/information_'+str(global_information['model'])+'.yaml', global_information['PATH']+'/scripts/configs')

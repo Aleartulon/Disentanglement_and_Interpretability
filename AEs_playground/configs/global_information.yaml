@@ -1,5 +1,5 @@
 physics_model: 'datasets/Molenkamp' # this is the Path to a directory for the training on a given dataset
-description: 'AE/initial' #for a given dataset, one can train with different hyperparameters, hence the 'description'
+description: 'AE/try' #for a given dataset, one can train with different hyperparameters, hence the 'description'
 epochs: 5000 #maximum number of epochs
 learning_rate: 0.0015 #initial learning rate
 dim_input: [1, 2]  # first dimension is # of channels (one if the predicted solution is a scalar field), second is spatial dimensions per channel.
