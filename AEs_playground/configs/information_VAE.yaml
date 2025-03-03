@@ -1,0 +1,21 @@
+kernel_encoder: [5, 5, 3, 3, 3, 3, 3] #kernels sizes of the Encoder
+filters_encoder: [8, 16, 32, 32, 32, 32, 2] #number of filters of the Encoder
+stride_encoder: [1, 2, 2, 2, 2, 1, 1] #strides of the Encoder
+latent_dimension: 5 #dimension of the latent space
+kernel_decoder: [3, 4, 4, 4, 4, 3, 3, 3] #kernels sizes of the Decoder
+number_channels_input_cnns_deco : 2
+filters_decoder: [32, 32, 32, 32, 32, 16, 2] #number of filters of the Decoder. Last one must be 2 for means anche variances
+stride_decoder: [1, 2, 2, 2, 2, 1, 1, 1] #strides of the Decoder
+final_and_initial_activation: false #if true, after the final linear layer of the encoder and the initial linear layer of the decoder an activation function is used
+training_loss_coefficients: #specifies the coefficients of the loss
+  l_reconstruction: 1.0 #reconstruciton of the image
+  kl_regularization: 1.0 #KL regularization of the latent space
+  total: None
+validation_loss_coefficients: #specifies the coefficients of the loss
+  l_reconstruction: 1.0 #reconstruciton of the image
+  l_reconstruction_unnormed: 1.0 #reconstruciton of the image, unnormalized.
+  kl_regularization: 1.0 #KL regularization of the latent space
+  total: None #total loss, coefficient
+dynamically_increasing_losses:
+  kl_regularization_strength: 0.001 #initial strength of the l_regularization term. At each epoch a quantity equal to l_regularization_strength is added to l_regularization/l_regularization_strength
+

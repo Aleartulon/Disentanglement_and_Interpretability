@@ -1,14 +1,15 @@
-import numpy as np
+import importlib
 import torch as tc
 import yaml
-import json
-import numpy as np
 import shutil
+import numpy as np
+from torch import nn
+import pickle
+import os
 import csv
-import gc
+import time
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
-import time
 
 def normalize_field_known_values_field(F, ma, mi):
     """this function applies the max-min normalization to the input F (solution field), based on the maximum ma and the minimum mi.
@@ -61,7 +62,7 @@ def inverse_normalization_field(F,ma,mi, spatial_dimensions): #here one less dim
             F_new[...,count,:,:] = F_new[...,count,:,:]*(ma[count]-mi[count]) + mi[count]
         return F_new
     
-def save_checkpoint(enco, dec, optimizer, scheduler, epoch, loss, lambda_strength,full_training_count,filepath):
+def save_checkpoint(enco, dec, optimizer, scheduler, epoch, loss,full_training_count,filepath):
     """saves the checkpoint of the system
 
     Args:
@@ -84,13 +85,12 @@ def save_checkpoint(enco, dec, optimizer, scheduler, epoch, loss, lambda_strengt
             'scheduler':scheduler.state_dict(),
             'epoch' : epoch,
             'loss' : loss,
-            'lambda_strength': lambda_strength,
             'full_training_count' : full_training_count
         }
     tc.save(checkpoint, filepath)
 
 
-def load_checkpoint(enco, f , dec, optim, scheduler, filepath, device):
+def load_checkpoint(enco , dec, optim, scheduler, filepath, device):
     """loads from the saved chackpoint the necessary object to start the training from the same point
 
     Args:
@@ -107,17 +107,14 @@ def load_checkpoint(enco, f , dec, optim, scheduler, filepath, device):
     """    
     checkpoint = tc.load(filepath, map_location=device)
     enco.load_state_dict(checkpoint['enco'])
-    f.load_state_dict(checkpoint['f'])
     dec.load_state_dict(checkpoint['dec'])
     optim.load_state_dict(checkpoint['optim'])
     scheduler.load_state_dict(checkpoint['scheduler'])
     epoch = checkpoint['epoch']
     loss = checkpoint['loss']
-    loss_coeff_2 = checkpoint['loss_coeff_2']
-    start_backprop = checkpoint['start_backprop']
     full_training_count = checkpoint['full_training_count']
         
-    return enco, f , dec, optim, scheduler , epoch, loss, loss_coeff_2, start_backprop, full_training_count
+    return enco, dec, optim, scheduler , epoch, loss, full_training_count
 
 def get_max_and_min(dataset, dim_input, normalization_field_ma, normalization_field_mi):
     """gets the maxima and the minima for the input fields and for the vector of parameters. In initial_information.yaml, under normalization_field_ma, normalization_field_mi, normalization_parameters_ma
