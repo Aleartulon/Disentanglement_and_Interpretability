@@ -41,7 +41,7 @@ class Convolutional_Variational_Encoder(nn.Module):
                 else:
                     self.convolutionals.append(nn.Conv1d(self.channels[i], filters[i], kernel[i], stride=stride[i], padding=self.size_kernel[i], padding_mode='replicate', bias=True))
 
-                nn.init.kaiming_uniform_(self.convolutionals[i].weight)  # Xavier initialization
+                tc.nn.init.xavier_uniform_(self.convolutionals[i].weight)  # Xavier initialization
 
         elif dim_input[1] == 2:
             for i in range(self.len_kernel):
@@ -51,13 +51,13 @@ class Convolutional_Variational_Encoder(nn.Module):
                 else:
                     self.convolutionals.append(nn.Conv2d(self.channels[i], filters[i], kernel[i], stride=stride[i], padding=self.size_kernel[i], padding_mode='replicate', bias=True))
                     
-                nn.init.kaiming_uniform_(self.convolutionals[i].weight)  # Xavier initialization
+                tc.nn.init.xavier_uniform_(self.convolutionals[i].weight)  # Xavier initialization
 
         # Dense fully-connected layer
         self.means = nn.Linear(input_dfnn, output_dfnn, bias=True)
         self.log_variances = nn.Linear(input_dfnn, output_dfnn, bias=True)
-        nn.init.kaiming_uniform_(self.means.weight)  # Xavier initialization
-        nn.init.kaiming_uniform_(self.log_variances.weight)
+        tc.nn.init.xavier_uniform_(self.means.weight)  # Xavier initialization
+        tc.nn.init.xavier_uniform_(self.log_variances.weight)
 
 
     def forward(self, x):
@@ -113,17 +113,17 @@ class Convolutional_Variational_Decoder(nn.Module):
 
         self.log_variances_dfnn = nn.Linear(input_dfnn * 2, dim_input[0]) #get the logsigma for the whole field (sigmas if multiple fields)
         self.dfnn = nn.Linear(input_dfnn, output_dfnn)
-        nn.init.kaiming_uniform_(self.dfnn.weight)
+        tc.nn.init.xavier_uniform_(self.dfnn.weight)
 
         if self.dim_input == 1:
             for i in range(len(kernel)):
                 self.transposed_convolutionals.extend([nn.ConvTranspose1d(self.inputs_cnns[i],self.channels[i],kernel[i],stride[i],padding=self.size_kernel, output_padding = 0)])
-                nn.init.kaiming_uniform_(self.transposed_convolutionals[i].weight)
+                tc.nn.init.xavier_uniform_(self.transposed_convolutionals[i].weight)
 
         elif self.dim_input == 2:
             for i in range(len(kernel)):
                 self.transposed_convolutionals.extend([nn.ConvTranspose2d(self.inputs_cnns[i],self.channels[i],kernel[i],stride[i],padding=self.size_kernel, output_padding = 0)])
-                nn.init.kaiming_uniform_(self.transposed_convolutionals[i].weight)
+                tc.nn.init.xavier_uniform_(self.transposed_convolutionals[i].weight)
 
     def forward(self,x, means, log_variances):
         
@@ -151,7 +151,8 @@ class Convolutional_Variational_Decoder(nn.Module):
             x = self.transposed_convolutionals[i](x)
             x = self.activation(x)
         x = self.transposed_convolutionals[-1](x)
-        return x[:,0,...].unsqueeze(1), log_variances_reconstruction # means, log_variances
+        #return x[:,0,...].unsqueeze(1), log_variances_reconstruction # means, log_variances
+        return x, log_variances_reconstruction # means, log_variances
 
 class Variational_AutoEncoder:
     def __init__(self , global_info, model_info):
