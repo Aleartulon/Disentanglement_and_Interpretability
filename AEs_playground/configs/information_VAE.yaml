@@ -17,5 +17,5 @@ validation_loss_coefficients: #specifies the coefficients of the loss
   kl_regularization: 1.0 #KL regularization of the latent space
   total: None #total loss, coefficient
 dynamically_increasing_losses:
-  kl_regularization_strength: 0.001 #initial strength of the l_regularization term. At each epoch a quantity equal to l_regularization_strength is added to l_regularization/l_regularization_strength
+  kl_regularization_strength: 1.0 #initial strength of the l_regularization term. At each epoch a quantity equal to l_regularization_strength is added to l_regularization/l_regularization_strength
 

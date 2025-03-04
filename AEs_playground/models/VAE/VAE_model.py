@@ -58,11 +58,7 @@ class Convolutional_Variational_Encoder(nn.Module):
         self.log_variances = nn.Linear(input_dfnn, output_dfnn, bias=True)
         nn.init.kaiming_uniform_(self.means.weight)  # Xavier initialization
         nn.init.kaiming_uniform_(self.log_variances.weight)
-    
-    def reparametrization(self, means, log_variances):
-        random = tc.randn_like(means)
-        sampled_vector = means + random * tc.exp(0.5 * log_variances)
-        return sampled_vector
+
 
     def forward(self, x):
         """Forward pass of the Encoder
@@ -83,7 +79,7 @@ class Convolutional_Variational_Encoder(nn.Module):
             means = self.activation(means)
             log_variances = self.activation(log_variances)
 
-        sampled_vector = self.reparametrization(means, log_variances)
+        sampled_vector = sample_from_gaussian(means, log_variances)
         return sampled_vector, means, log_variances
 
 class Convolutional_Variational_Decoder(nn.Module):
@@ -115,7 +111,7 @@ class Convolutional_Variational_Decoder(nn.Module):
         self.activation = self.gelu
         self.initial_activation = initial_activation
 
-        self.log_variances_dfnn = nn.Linear(input_dfnn, dim_input[0]) #get the logsigma for the whole field (sigmas if multiple fields)
+        self.log_variances_dfnn = nn.Linear(input_dfnn * 2, dim_input[0]) #get the logsigma for the whole field (sigmas if multiple fields)
         self.dfnn = nn.Linear(input_dfnn, output_dfnn)
         nn.init.kaiming_uniform_(self.dfnn.weight)
 
@@ -129,7 +125,7 @@ class Convolutional_Variational_Decoder(nn.Module):
                 self.transposed_convolutionals.extend([nn.ConvTranspose2d(self.inputs_cnns[i],self.channels[i],kernel[i],stride[i],padding=self.size_kernel, output_padding = 0)])
                 nn.init.kaiming_uniform_(self.transposed_convolutionals[i].weight)
 
-    def forward(self,x):
+    def forward(self,x, means, log_variances):
         
         """Forward pass of the decoder
 
@@ -140,7 +136,7 @@ class Convolutional_Variational_Decoder(nn.Module):
             torch.tensor: a tensor of size [B * T, C, dim_x_1, dim_x_2, ...], where B is batch_size, T is the length of the full time series, C is the number of channels of the 
             predicted solution field, dim_x_1, dim_x_2, ... are the dimensions of the first spatial dimension, second spatial dimension, etc
         """        
-        log_variances = self.log_variances_dfnn(x)
+        log_variances_reconstruction = self.log_variances_dfnn(tc.cat((means, log_variances),-1))
         x = self.dfnn(x)
         if self.initial_activation:
             x = self.activation(x) #do not use this if relu in encoder and decoder !!!!!!!!
@@ -155,7 +151,7 @@ class Convolutional_Variational_Decoder(nn.Module):
             x = self.transposed_convolutionals[i](x)
             x = self.activation(x)
         x = self.transposed_convolutionals[-1](x)
-        return x[:,0,...].unsqueeze(1), log_variances # means, log_variances
+        return x[:,0,...].unsqueeze(1), log_variances_reconstruction # means, log_variances
 
 class Variational_AutoEncoder:
     def __init__(self , global_info, model_info):
