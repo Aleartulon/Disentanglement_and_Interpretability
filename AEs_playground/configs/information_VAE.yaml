@@ -4,7 +4,7 @@ stride_encoder: [1, 2, 2, 2, 2, 1, 1] #strides of the Encoder
 latent_dimension: 5 #dimension of the latent space
 kernel_decoder: [3, 4, 4, 4, 4, 3, 3, 3] #kernels sizes of the Decoder
 number_channels_input_cnns_deco : 2
-filters_decoder: [32, 32, 32, 32, 32, 16, 2] #number of filters of the Decoder. Last one must be 2 for means anche variances
+filters_decoder: [32, 32, 32, 32, 32, 16, 1] #number of filters of the Decoder. Last one must be 2 for means anche variances
 stride_decoder: [1, 2, 2, 2, 2, 1, 1, 1] #strides of the Decoder
 final_and_initial_activation: false #if true, after the final linear layer of the encoder and the initial linear layer of the decoder an activation function is used
 training_loss_coefficients: #specifies the coefficients of the loss

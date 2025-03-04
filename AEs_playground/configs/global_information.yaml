@@ -1,20 +1,20 @@
 physics_model: 'datasets/Molenkamp' # this is the Path to a directory for the training on a given dataset
-description: 'VAE/try' #for a given dataset, one can train with different hyperparameters, hence the 'description'
+description: 'VAE/try_250' #for a given dataset, one can train with different hyperparameters, hence the 'description'
 epochs: 5000 #maximum number of epochs
-learning_rate: 0.0015 #initial learning rate
+learning_rate: 0.001 #initial learning rate
 dim_input: [1, 2]  # first dimension is # of channels (one if the predicted solution is a scalar field), second is spatial dimensions per channel.
 side_size : 128 # length of each dimension of the input field
-gamma_lr: 0.995 # gamma of  tc.optim.lr_scheduler.ExponentialLR()
-batch_size : 16 # batch size
+gamma_lr: 0.99 # gamma of  tc.optim.lr_scheduler.ExponentialLR()
+batch_size : 32 # batch size. If using POD, this should be equal to the whole batch of training data available
 warmup_lr: 10 # number of epochs of warmup of the learning rate
-clipping: [0, 2.5] #[if 1 clipping is applied, maximum norm allowed to gradients]
+clipping: [1, 2.5] #[if 1 clipping is applied, maximum norm allowed to gradients]
 model : "VAE" # defines the type of model to use: AE (AutoEncoder), VAE (VariationalAutoEncoder), FNO (FourierNeuralOperator)
 class_name : 'Variational_AutoEncoder'
-device : 'cuda:2' #device where to train
+device : 'cuda:1' #device where to train, if not on GPU just write 'cpu'
 num_workers : 8 #number of workers of dataloaders
 data_path : '../../../../../scratch/aalelonghi/molenkamp_whole_time_series/' #path of training and validation data
-training_data_path : 'field_step_training.npy'
-validation_data_path : 'field_step_validation.npy'
+training_data_path : 'image_training.npy'
+validation_data_path : 'image_validation.npy'
 checkpoint: false  # if true uses existing checkpoint
 normalization_field_ma : [True, 1.0] # if true, maxima of each dimension of the solution fields are found. If not, dimension 1,2, etc are the maxima of dimension 1,2, etc of the solution field (only one if it is a scalar field)
 normalization_field_mi : [True, 0.0] # if true, minima of each dimension of the solution fields are found. If not, dimension 1,2, etc are the minima of dimension 1,2, etc of the solution field (only one if it is a scalar field)

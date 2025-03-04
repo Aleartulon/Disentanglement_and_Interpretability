@@ -121,7 +121,7 @@ def loss_sup_mixed(conv_encoder, conv_decoder, field, ma_mi, device, loss_coeff,
 
 def l1_loss(conv_encoder, conv_decoder, input_encoder, dim_input, loss_coeff, ma_mi, train ):
     latent_space, means, log_variances = conv_encoder(input_encoder)
-    back_to_physical, log_variances_reconstruction = conv_decoder(latent_space)
+    back_to_physical, log_variances_reconstruction = conv_decoder(latent_space, means, log_variances)
     l1 = reconstruction_loss_VAE(back_to_physical,input_encoder, log_variances_reconstruction, dim_input[1]) * loss_coeff['l_reconstruction']
     if not train:
         back_to_physical = inverse_normalization_field(back_to_physical, ma_mi[0], ma_mi[1], dim_input[1])
@@ -143,16 +143,16 @@ def KL_divergence(means,log_variances):
     return KL
 
 def reconstruction_loss_VAE(inp, target, log_variances, dim_input): #how to treat sigmas of decoder is tricky and can bring instabilities to the training
-    eps = tc.tensor(1e-8)
+    eps = 1e-8
     if dim_input > 1:
         inp = inp.flatten(start_dim=-dim_input)
         target = target.flatten(start_dim=-dim_input)
-        #log_variances = log_variances.flatten(start_dim=-dim_input)
+        log_variances = log_variances.flatten(start_dim=-dim_input)
     
-    #log_variances = tc.clamp(log_variances, min=-6, max=6)
-    #variances = tc.exp(log_variances) + eps 
-    #loss = tc.mean(tc.sum((inp - target)**2, dim=-1) / (2 * variances) + inp.size(-1) * 0.5 * log_variances)
-    loss = tc.mean(tc.sum((inp - target)**2, dim=-1) / 2)
+    log_variances = tc.clamp(log_variances, min=-6, max=6)
+    variances = tc.exp(log_variances) + eps 
+    loss = tc.mean(tc.sum((inp - target)**2, dim=-1) / (2 * variances) + inp.size(-1) * 0.5 * log_variances)
+    #loss = tc.mean(tc.sum((inp - target)**2, dim=-1) / 2)
     #if tc.isnan(loss):
     #    print('reconstruction_loss_VAE encountered NaN')
     #    print(log_variances)
