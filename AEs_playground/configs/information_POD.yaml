@@ -1,1 +1,3 @@
-latent_dimension : 250
+latent_dimension : 200
+weight_decay:
+  encoder: None

@@ -1,2 +1,4 @@
 - Can two variables be independent but correlated?
 - Is it really necessary to use a VAE instead of an AE with an L1 normalization on the latent vectors?
+- does enforcing sparsity in the decoder force it to become the 'real function' and thus pushing the real latent dimensions?
+- for the latent dimensions, they are uncorrelated only if the full order images are uncorrelated, otherewise they will be as well. So in the latent evolution of the latent space, the latent dimensions of the initial condition fields will be uncorrelated, but once t>0 they will be correlated.

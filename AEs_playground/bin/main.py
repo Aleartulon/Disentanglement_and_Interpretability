@@ -47,7 +47,7 @@ def main():
     model = ClassRef(global_information, model_information)
 
     #move the models to the device and set optimizer
-    optim, pre_scheduler, scheduler = model.send_to_device_and_set_optimizer(global_information['learning_rate'], global_information['gamma_lr'] , global_information['warmup_lr'], device)
+    optim, pre_scheduler, scheduler = model.send_to_device_and_set_optimizer(global_information['learning_rate'], global_information['gamma_lr'] , global_information['warmup_lr'], model_information['weight_decay'], device)
     #print information
 
     print('---------- INITIAL INFORMATION ----------')
