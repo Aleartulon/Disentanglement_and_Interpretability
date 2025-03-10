@@ -3,6 +3,7 @@ from src.data_functions import *
 def train_epoch(conv_encoder, conv_decoder, ma_mi, device, optim, training_data, loss_coeff, dim_input, clipping):
     
     l1_loss = 0
+    l_invertible_loss = 0
     regularization_loss = 0
     loss = 0
     count = 0
@@ -14,19 +15,20 @@ def train_epoch(conv_encoder, conv_decoder, ma_mi, device, optim, training_data,
         
         optim.zero_grad()
         # do with dictionary
-        l1, regularization_latent  = loss_sup_mixed(conv_encoder, conv_decoder, field ,ma_mi, device, loss_coeff, dim_input, True)
+        l1, l_invertible, regularization_latent  = loss_sup_mixed(conv_encoder, conv_decoder, field ,ma_mi, device, loss_coeff, dim_input, True)
 
-        (l1+regularization_latent).backward()
+        (l1+l_invertible+regularization_latent).backward()
         if clipping[0]:
             tc.nn.utils.clip_grad_norm_(conv_encoder.parameters(), max_norm=clipping[1])
             tc.nn.utils.clip_grad_norm_(conv_decoder.parameters(), max_norm=clipping[1])
         optim.step()
-        loss += (l1+regularization_latent).detach().cpu().item()
+        loss += (l1+l_invertible+regularization_latent).detach().cpu().item()
         
         l1_loss += l1.detach().cpu().item()
+        l_invertible_loss += l_invertible.detach().cpu().item()
         regularization_loss += regularization_latent.detach().cpu().item()
         count += 1
-        dictionary_losses_values = {'l_reconstruction':l1_loss/count, 'l_regularization':regularization_loss/count, 'total': loss/count}
+        dictionary_losses_values = {'l_reconstruction':l1_loss/count, 'l_invertible':l_invertible_loss/count,'l_regularization':regularization_loss/count, 'total': loss/count}
     return dictionary_losses_values
 
 
@@ -54,6 +56,7 @@ def valid_epoch(conv_encoder, conv_decoder, ma_mi, device, validation_data, loss
     conv_decoder.eval()
 
     l1_loss = 0
+    l_invertible_loss = 0
     l1_loss_unnorm = 0
     regularization_loss = 0
     loss = 0
@@ -61,14 +64,15 @@ def valid_epoch(conv_encoder, conv_decoder, ma_mi, device, validation_data, loss
     with tc.no_grad():
         for field in validation_data:
 
-            l1, regularization_latent  = loss_sup_mixed(conv_encoder , conv_decoder, field, ma_mi, device, loss_coeff, dim_input, False)
+            l1, l_invertible,regularization_latent  = loss_sup_mixed(conv_encoder , conv_decoder, field, ma_mi, device, loss_coeff, dim_input, False)
 
-            loss += (l1[0]+regularization_latent).detach().item()
+            loss += (l1[0]+l_invertible+regularization_latent).detach().item()
             l1_loss += l1[0].detach().cpu().item()
+            l_invertible_loss += l_invertible.detach().cpu().item()
             l1_loss_unnorm += l1[1].detach().cpu().item()
             regularization_loss += regularization_latent.detach().cpu().item()
             count += 1
-    dictionary_losses_values = {'l_reconstruction':l1_loss/count, 'l_reconstruction_unnormed':l1_loss_unnorm/count, 'l_regularization':regularization_loss/count ,'total': loss/count}
+    dictionary_losses_values = {'l_reconstruction':l1_loss/count, 'l_reconstruction_unnormed':l1_loss_unnorm/count, 'l_invertible':l_invertible_loss/count ,'l_regularization':regularization_loss/count ,'total': loss/count}
     return dictionary_losses_values
 
 
@@ -115,9 +119,11 @@ def loss_sup_mixed(conv_encoder, conv_decoder, field, ma_mi, device, loss_coeff,
 
     #First loss: invertibility of autoencoder enc-dec-enc
     l1, latent_space = l1_loss(conv_encoder, conv_decoder, input_encoder, dim_input, loss_coeff, ma_mi, train)
-    #Second loss: regularization of the latent space: for AE it is simple l1 norm, form VAE it is KL divergence between posterior and prior
+    #Second loss: invertibility of autoencoder dec-enc-dec
+    l_invertible = l_change_just_one_dimension_loss(latent_space, conv_encoder, conv_decoder, loss_coeff, dim_input, device)
+    #third loss: regularization of the latent space: for AE it is simple l1 norm, form VAE it is KL divergence between posterior and prior
     l_regularization = l_regularization_latent_space(loss_coeff['l_regularization'], latent_space)
-    return l1, l_regularization
+    return l1, l_invertible, l_regularization
 
 def l1_loss(conv_encoder, conv_decoder, input_encoder, dim_input, loss_coeff, ma_mi, train ):
 
@@ -131,6 +137,28 @@ def l1_loss(conv_encoder, conv_decoder, input_encoder, dim_input, loss_coeff, ma
         l1 = [l1, l1_unnorm]
 
     return l1, latent_space
+
+def l_invertible_loss(latent_space, conv_encoder, conv_decoder, loss_coeff, dim_input):
+    decoded = conv_decoder(latent_space)
+    new_latent = conv_encoder(decoded)
+    l_invertible = L2_relative_loss(new_latent,latent_space, dim_input[1], True) * loss_coeff['l_invertible']
+    return l_invertible
+
+def l_change_just_one_dimension_loss(latent_space, conv_encoder, conv_decoder, loss_coeff, dim_input, device):
+    which_dimension = tc.floor(tc.rand(latent_space.size(0),1, dtype=tc.float32) * (latent_space.size(-1)))
+    zeroes = tc.zeros(latent_space.size(0), latent_space.size(-1), dtype=tc.float32)
+    zeroes = zeroes.scatter_(1, which_dimension.to(tc.int64), 1).to(device)
+
+    which_percentage = (tc.rand(1) * 0.2).to(device)
+    latent_space = latent_space + latent_space * zeroes * which_percentage
+    decoded = conv_decoder(latent_space)
+    new_latent = conv_encoder(decoded)
+
+    mask = tc.ones_like(latent_space, dtype=tc.bool)
+    mask[which_dimension.squeeze(-1).int()] = False 
+
+    l_invertible = L2_relative_loss(new_latent[mask],latent_space[mask], dim_input[1], True) * loss_coeff['l_invertible']
+    return l_invertible
 
 def l_regularization_latent_space(lambda_regularization, latent_space):
     if lambda_regularization == 0.0:
