@@ -145,19 +145,16 @@ def l_invertible_loss(latent_space, conv_encoder, conv_decoder, loss_coeff, dim_
     return l_invertible
 
 def l_change_just_one_dimension_loss(latent_space, conv_encoder, conv_decoder, loss_coeff, dim_input, device):
-    which_dimension = tc.floor(tc.rand(latent_space.size(0),1, dtype=tc.float32) * (latent_space.size(-1)))
-    zeroes = tc.zeros(latent_space.size(0), latent_space.size(-1), dtype=tc.float32)
+    which_dimension = tc.randint(0, latent_space.size(-1), (latent_space.size(0), 1), device=device)
+    zeroes = tc.zeros(latent_space.size(0), latent_space.size(-1), dtype=tc.float32, device=device)
     zeroes = zeroes.scatter_(1, which_dimension.to(tc.int64), 1).to(device)
-
-    which_percentage = (tc.rand(1) * 0.2).to(device)
+    which_percentage = ((tc.rand(latent_space.size(0),1)-0.5)).to(device)
     latent_space = latent_space + latent_space * zeroes * which_percentage
+
     decoded = conv_decoder(latent_space)
     new_latent = conv_encoder(decoded)
-
-    mask = tc.ones_like(latent_space, dtype=tc.bool)
-    mask[which_dimension.squeeze(-1).int()] = False 
-
-    l_invertible = L2_relative_loss(new_latent[mask],latent_space[mask], dim_input[1], True) * loss_coeff['l_invertible']
+    boolean = tc.ones_like(latent_space) - zeroes
+    l_invertible = L2_relative_loss(new_latent[boolean.bool()],latent_space[boolean.bool()], dim_input[1], True) * loss_coeff['l_invertible']
     return l_invertible
 
 def l_regularization_latent_space(lambda_regularization, latent_space):

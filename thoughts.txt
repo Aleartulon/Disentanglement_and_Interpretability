@@ -3,3 +3,4 @@
 - does enforcing sparsity in the decoder force it to become the 'real function' and thus pushing the real latent dimensions?
 - for the latent dimensions, they are uncorrelated only if the full order images are uncorrelated, otherewise they will be as well. So in the latent evolution of the latent space, the latent dimensions of the initial condition fields will be uncorrelated, but once t>0 they will be correlated.
 - a latent dimension should be such that if I only change it, I decode the new latent vector and I encode it again, only that latent dimension has changed. Is this connected with encoder and decoder being invertible?
+- is the encoder the inverse function of the function that generates high dimensional data from low dimensional factors? The decoder is instead an approximation of the underline generative process.
