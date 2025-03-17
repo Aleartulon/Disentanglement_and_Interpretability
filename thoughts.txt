@@ -4,3 +4,6 @@
 - for the latent dimensions, they are uncorrelated only if the full order images are uncorrelated, otherewise they will be as well. So in the latent evolution of the latent space, the latent dimensions of the initial condition fields will be uncorrelated, but once t>0 they will be correlated.
 - a latent dimension should be such that if I only change it, I decode the new latent vector and I encode it again, only that latent dimension has changed. Is this connected with encoder and decoder being invertible?
 - is the encoder the inverse function of the function that generates high dimensional data from low dimensional factors? The decoder is instead an approximation of the underline generative process.
+- The main goal of dimensionality reduction is to find a low dimensional system of coordinate which correctly describes the structure of the high dimensional data. More formally,
+data are often represented in high dimensional euclidean spaces, however data (unless random poins) have instrinsically a structure which is represented by a manifold which has an intrinsic dimensionality
+lower than the one used by the high dimensional euclidean space.

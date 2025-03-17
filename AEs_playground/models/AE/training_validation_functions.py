@@ -148,7 +148,7 @@ def l_change_just_one_dimension_loss(latent_space, conv_encoder, conv_decoder, l
     which_dimension = tc.randint(0, latent_space.size(-1), (latent_space.size(0), 1), device=device)
     zeroes = tc.zeros(latent_space.size(0), latent_space.size(-1), dtype=tc.float32, device=device)
     zeroes = zeroes.scatter_(1, which_dimension.to(tc.int64), 1).to(device)
-    which_percentage = ((tc.rand(latent_space.size(0),1)-0.5)).to(device)
+    which_percentage = ((tc.rand(latent_space.size(0),1)-0.5)*2).to(device)
     latent_space = latent_space + latent_space * zeroes * which_percentage
 
     decoded = conv_decoder(latent_space)
