@@ -14,4 +14,11 @@ to the variations of the dimensions.
 - Let’s say I have a vector of dimension n, and I transform it through a series of mathematical transformations to another vector of dimension n. The mathematical transformations are such that the transformation is invertibile. Can this transformation be interpreted as a change of coordinates?
 - Are there autoencoders that leverage variance across data ?
 - In a 'platonic' setting, objects belong to 3d space: like a ball in space. However when we treat them as data, the objects becomes thousands of pixels,
-i.e., they belong to a high dimensional space. is there anything to be understood here?
+i.e., they belong to a high dimensional space. is there anything to be understood here? Is this related with platonic being continuoius which explodes in dimensionality when 
+represented in a discrete form?
+- maybe the true intrinsic dimensions are found only by a resolution invariant autoencoder.
+- 4 different notions of dimensionality:
+    Representational dimensionality: The number of dimensions in our digital representation of an object (e.g., millions of pixels in an image)
+    Parametric dimensionality: The number of parameters needed to uniquely specify or describe an object (e.g., 4 parameters for a sphere: center coordinates x,y,z plus radius)
+    Ambient dimensionality: The number of dimensions of the space in which the object exists (e.g., 3D for physical objects in our world)
+    Intrinsic dimensionality: The minimum number of coordinates needed to navigate within the object itself (e.g., 2 for a sphere's surface, as you can specify any point with latitude and longitude)
