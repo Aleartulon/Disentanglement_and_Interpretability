@@ -11,3 +11,7 @@ lower than the one used by the high dimensional euclidean space.
 however if a dataset consists only of one image, then a linear projection would fully represent the image has it is trivially the same vector mulitplied by 1.
 - the PCA is different from, for example, an autoencoder (AE), as PCA needs to see variation in data to extract latent dimensions, while AE can extract multiple latent dimensions even from only one sample. So the latent dimensions in PCA are connected
 to the variations of the dimensions.
+- Let’s say I have a vector of dimension n, and I transform it through a series of mathematical transformations to another vector of dimension n. The mathematical transformations are such that the transformation is invertibile. Can this transformation be interpreted as a change of coordinates?
+- Are there autoencoders that leverage variance across data ?
+- In a 'platonic' setting, objects belong to 3d space: like a ball in space. However when we treat them as data, the objects becomes thousands of pixels,
+i.e., they belong to a high dimensional space. is there anything to be understood here?
