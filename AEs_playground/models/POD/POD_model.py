@@ -6,7 +6,7 @@ class POD:
         self.dim_input = global_info['dim_input']
         self.PATH = global_info['PATH']
         self.device = global_info['device']
-    def send_to_device_and_set_optimizer(self, learning_rate, gamma_scheduler , warmup_time, device):
+    def send_to_device_and_set_optimizer(self, learning_rate, gamma_scheduler, warmup_time, weight_decay,device):
         return 0, 0, 0
 
     def train(self, training, validation, ma_mi, optim, pre_scheduler, scheduler):

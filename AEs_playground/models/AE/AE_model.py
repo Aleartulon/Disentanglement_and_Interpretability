@@ -207,6 +207,7 @@ class AutoEncoder:
             training_losses = {} #define training losses dictionary
             validation_losses = {} #define training losses dictionary
             max_regularization_coefficient = self.training_loss_coefficients['l_regularization']
+            max_invertible_coefficient = self.training_loss_coefficients['l_invertible']
 
             for key in self.training_loss_coefficients:
                 training_losses[key] = np.zeros(self.epochs)
@@ -224,10 +225,12 @@ class AutoEncoder:
                 time1 = time.time()
                 if i < self.warmup_lr: #use only AR
                     self.training_loss_coefficients['l_regularization'] = 0
+                    self.training_loss_coefficients['l_invertible'] = 0
                     train_losses_data = train_epoch(self.encoder, self.decoder, ma_mi, self.device, optim, training_data, self.training_loss_coefficients, self.dim_input, self.clipping)
                     valid_losses_data = valid_epoch(self.encoder, self.decoder, ma_mi, self.device, validation_data, self.validation_loss_coefficients, self.dim_input)
                     valid_losses_data['total'] = 1e6 # do not save anything during warming up
                 else:
+                    self.training_loss_coefficients['l_invertible'] = max_invertible_coefficient
                     self.training_loss_coefficients['l_regularization'] = max_regularization_coefficient* self.dynamically_increasing_losses['l_regularization_strength'] * full_training_count #increase dynamically the strength of the latent regularization term
                     full_training_count +=1
                     
@@ -283,6 +286,7 @@ class AutoEncoder:
             loss_value = loss
             early_stopping = 0 
             max_regularization_coefficient = self.training_loss_coefficients['l_regularization']
+            max_invertible_coefficient = self.training_loss_coefficients['l_invertible']
 
             with open(self.PATH + "/losses/training_losses.json", "rb") as f:
                 training_losses = pickle.load(f)
@@ -300,10 +304,12 @@ class AutoEncoder:
                 time1 = time.time()
                 if i < self.warmup_lr: #use only AR
                     self.training_loss_coefficients['l_regularization'] = 0
+                    self.training_loss_coefficients['l_invertible'] = 0
                     train_losses_data = train_epoch(self.encoder, self.decoder, ma_mi, self.device, optim, training_data, self.training_loss_coefficients, self.dim_input, self.clipping)
                     valid_losses_data = valid_epoch(self.encoder, self.decoder, ma_mi, self.device, validation_data, self.validation_loss_coefficients, self.dim_input)
                     valid_losses_data['total'] = 1e6 # do not save anything during warming up
                 else:
+                    self.training_loss_coefficients['max_invertible_coefficient']
                     self.training_loss_coefficients['l_regularization'] = max_regularization_coefficient* self.dynamically_increasing_losses['l_regularization_strength'] * full_training_count #increase dynamically the strength of the latent regularization term
                     full_training_count +=1
                     

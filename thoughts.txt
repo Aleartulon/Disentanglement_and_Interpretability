@@ -2,3 +2,30 @@
 - Is it really necessary to use a VAE instead of an AE with an L1 normalization on the latent vectors?
 - does enforcing sparsity in the decoder force it to become the 'real function' and thus pushing the real latent dimensions?
 - for the latent dimensions, they are uncorrelated only if the full order images are uncorrelated, otherewise they will be as well. So in the latent evolution of the latent space, the latent dimensions of the initial condition fields will be uncorrelated, but once t>0 they will be correlated.
+- a latent dimension should be such that if I only change it, I decode the new latent vector and I encode it again, only that latent dimension has changed. Is this connected with encoder and decoder being invertible?
+- is the encoder the inverse function of the function that generates high dimensional data from low dimensional factors? The decoder is instead an approximation of the underline generative process.
+- The main goal of dimensionality reduction is to find a low dimensional system of coordinate which correctly describes the structure of the high dimensional data. More formally,
+data are often represented in high dimensional euclidean spaces, however data (unless random poins) have instrinsically a structure which is represented by a manifold which has an intrinsic dimensionality
+lower than the one used by the high dimensional euclidean space.
+- there is a difference between the latent structure of an object and the latent structure of the variation of an object: a circle in an image has an instrinsic dimensionality of 3 and it is a nonlinear manifold, 
+however if a dataset consists only of one image, then a linear projection would fully represent the image has it is trivially the same vector mulitplied by 1.
+- the PCA is different from, for example, an autoencoder (AE), as PCA needs to see variation in data to extract latent dimensions, while AE can extract multiple latent dimensions even from only one sample. So the latent dimensions in PCA are connected
+to the variations of the dimensions.
+- Let’s say I have a vector of dimension n, and I transform it through a series of mathematical transformations to another vector of dimension n. The mathematical transformations are such that the transformation is invertibile. Can this transformation be interpreted as a change of coordinates?
+- Are there autoencoders that leverage variance across data ?
+- In a 'platonic' setting, objects belong to 3d space: like a ball in space. However when we treat them as data, the objects becomes thousands of pixels,
+i.e., they belong to a high dimensional space. is there anything to be understood here? Is this related with platonic being continuoius which explodes in dimensionality when 
+represented in a discrete form?
+- maybe the true intrinsic dimensions are found only by a resolution invariant autoencoder.
+- 4 different notions of dimensionality:
+    Representational dimensionality: The number of dimensions in our digital representation of an object (e.g., millions of pixels in an image)
+    Parametric dimensionality: The number of parameters needed to uniquely specify or describe an object (e.g., 4 parameters for a sphere: center coordinates x,y,z plus radius)
+    Ambient dimensionality: The number of dimensions of the space in which the object exists (e.g., 3D for physical objects in our world)
+    Intrinsic dimensionality: The minimum number of coordinates needed to navigate within the object itself (e.g., 2 for a sphere's surface, as you can specify any point with latitude and longitude)
+- the reduced representation should be an invariant of the coordinates system of the full system
+- what if mapping to the latent space is equivalent to finding the system of reference where gravity does not exist in General Relativity.
+- let's say I have an image where here is a circle. the circle is a low dimensional manifold. 
+   let's say now I reduce the dimensionality and my low dimensional vector respects the intrinsic dimensionality of the manifold,
+    i.e., it is composed by the coordinates of the center and the radius. this low dimensional manifold, is it flat?
+  but if we reason like this, i.e. the latent dimensions are independent, then the latent space must always be flat !
+- Model discovery in latent space
