@@ -22,3 +22,10 @@ represented in a discrete form?
     Parametric dimensionality: The number of parameters needed to uniquely specify or describe an object (e.g., 4 parameters for a sphere: center coordinates x,y,z plus radius)
     Ambient dimensionality: The number of dimensions of the space in which the object exists (e.g., 3D for physical objects in our world)
     Intrinsic dimensionality: The minimum number of coordinates needed to navigate within the object itself (e.g., 2 for a sphere's surface, as you can specify any point with latitude and longitude)
+- the reduced representation should be an invariant of the coordinates system of the full system
+- what if mapping to the latent space is equivalent to finding the system of reference where gravity does not exist in General Relativity.
+- let's say I have an image where here is a circle. the circle is a low dimensional manifold. 
+   let's say now I reduce the dimensionality and my low dimensional vector respects the intrinsic dimensionality of the manifold,
+    i.e., it is composed by the coordinates of the center and the radius. this low dimensional manifold, is it flat?
+  but if we reason like this, i.e. the latent dimensions are independent, then the latent space must always be flat !
+- Model discovery in latent space
