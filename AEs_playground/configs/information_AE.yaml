@@ -21,7 +21,7 @@ validation_loss_coefficients: #specifies the coefficients of the loss
 dynamically_increasing_losses:
   l_regularization_strength: 0.01 #initial strength of the l_regularization term. At each epoch a quantity equal to l_regularization_strength is added to l_regularization/l_regularization_strength
 weight_decay:
-  encoder: 0.0
-  decoder: 0.0
+  encoder: 0.001
+  decoder: 0.001
 
 

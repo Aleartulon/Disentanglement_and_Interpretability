@@ -29,3 +29,6 @@ represented in a discrete form?
     i.e., it is composed by the coordinates of the center and the radius. this low dimensional manifold, is it flat?
   but if we reason like this, i.e. the latent dimensions are independent, then the latent space must always be flat !
 - Model discovery in latent space
+- curved space can intuitively be understood by looking at distances in nonlinear functions: given a function f(x) which is constant 
+in x\in[0,a] and then highly nonlinear in x\in(a,1], each point in x\in[0,a], although can be distant in [0,a], maps into the same point f(x).
+Contrarely, when x\in(a,1], very close points in x, can map to very far points in f(x). This does not happen then f is linear as distances are preserved.
